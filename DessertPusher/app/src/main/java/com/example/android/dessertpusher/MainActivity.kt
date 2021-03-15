@@ -18,7 +18,6 @@ package com.example.android.dessertpusher
 
 import android.content.ActivityNotFoundException
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -29,10 +28,15 @@ import androidx.lifecycle.LifecycleObserver
 import com.example.android.dessertpusher.databinding.ActivityMainBinding
 import timber.log.Timber
 
+const val KEY_REVENUE = "revenue"
+const val KEY_AMOUNT_SOLD = "amount_sold"
+const val KEY_START_TIME = "start_time"
+
 class MainActivity : AppCompatActivity(), LifecycleObserver {
 
     private var revenue = 0
     private var dessertsSold = 0
+    private var startTime = 0
     private lateinit var dessertTimer: DessertTimer
 
     // Contains all the views
@@ -77,7 +81,13 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
             onDessertClicked()
         }
 
-        dessertTimer = DessertTimer(this.lifecycle)
+        if (savedInstanceState != null) {
+            revenue = savedInstanceState.getInt(KEY_REVENUE)
+            dessertsSold = savedInstanceState.getInt(KEY_AMOUNT_SOLD)
+            startTime = savedInstanceState.getInt(KEY_START_TIME)
+        }
+
+        dessertTimer = DessertTimer(this.lifecycle, startTime)
 
         // Set the TextViews to the right values
         binding.revenue = revenue
@@ -184,5 +194,21 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
         super.onDestroy()
 
         Timber.i("onDestroy Called")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        Timber.i("onSaveInstanceState Called")
+
+        outState.putInt(KEY_REVENUE, revenue)
+        outState.putInt(KEY_AMOUNT_SOLD, dessertsSold)
+        outState.putInt(KEY_START_TIME, dessertTimer.secondsCount)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        Timber.i("onRestoreInstanceState Called")
     }
 }
