@@ -20,6 +20,7 @@ import android.os.CountDownTimer
 import android.text.format.DateUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 
 
@@ -44,6 +45,10 @@ class GameViewModel : ViewModel() {
     private val _currentTimer = MutableLiveData<Long>()
     val currentTimer : LiveData<Long>
         get() = _currentTimer
+
+    val currentTimeString = Transformations.map(currentTimer) { time ->
+        DateUtils.formatElapsedTime(time)
+    }
 
     // The current word
     private val _word = MutableLiveData<String>()
